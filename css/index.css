@@ -82,6 +82,15 @@ body {
     text-align: center;
 }
 
-.button {
-    font-family: Courier; 
-}
+.send {
+    font-family: Arial, sans-serif; /* Troque 'Arial' pelo nome da fonte desejada */
+    font-size: 16px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-weight: bold; /* Opcional: altera o peso da fonte */
+    color: #080808; /* Cor do texto */
+    background-color: #fff; /* Cor do fundo do botão */
+    padding: 10px 20px;
+    border: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
