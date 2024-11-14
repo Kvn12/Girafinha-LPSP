@@ -1,0 +1,87 @@
+body { 
+    font-family: Arial, sans-serif; 
+    color: #FFFFFF;
+    display: flex; 
+    justify-content: center; 
+    background-color: #1b1b32;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.container { 
+    display: block; 
+    gap: 40px; 
+}
+
+.section { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    height: fit-content;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.control-group-z {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 98px;
+    margin-top: 58px;
+}
+
+.slider { 
+    width: 200px; 
+}
+
+.slider-vertical {
+    transform: rotate(-90deg);
+    width: 200px;
+    margin-top: 50px; /* Ajuste para centralizar o slider na vertical */
+    margin-bottom: 10px;
+}
+
+.label { 
+    font-weight: bold; 
+    margin-top: 10px; 
+}
+
+.sliders-container {
+    display: flex;
+    height: fit-content;
+    gap: 60px;
+}
+
+.value-input { 
+    width: 60px; 
+    text-align: center; 
+}
+
+.inferior-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.slider-values {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+
+.slider-values span {
+    width: 33%; /* Espaçamento uniforme para cada valor */
+    text-align: center;
+}
+
+.button {
+    font-family: Courier; 
+}
