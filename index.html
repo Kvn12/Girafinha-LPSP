@@ -66,6 +66,17 @@
     </div>
   </div>
   <input type="button" class="send" value="Enviar">
+  <div class="save-position-container">
+    <input type="text" id="position-name" placeholder="Digite o nome da posição" />
+    <button id="save-position">Salvar Posição</button>
+  </div>
+  <div class="saved-positions-container">
+    <label for="saved-positions">Posições Salvas</label>
+    <select id="saved-positions" size="5">
+      <!-- As opções serão carregadas dinamicamente -->
+    </select>
+    <button id="load-position">Carregar Posição</button>
+  </div>  
   <script src="js/script.js"></script>
 </body>
 </html>
