@@ -1,8 +1,2 @@
-Nome: testeA, J1: 38, J2: 41, J3: 57, Z: 90
-Nome: testeB, J1: 0, J2: 0, J3: 0, Z: 90
-Nome: testeC, J1: 0, J2: 0, J3: 50, Z: 90
-Nome: testeD, J1: 55, J2: -65, J3: 50, Z: 29
-Nome: testenegativo, J1: -62, J2: -44, J3: -55, Z: 90
-Nome: teste6, J1: 0, J2: 0, J3: 72, Z: 90
-Nome: Thiagao, J1: 74, J2: 53, J3: 66, Z: 0
-Nome: kvn, J1: 60, J2: 53, J3: 66, Z: 0
+Nome: Home, J1: 0, J2: 0, J3: 0, Z: 90
+Nome: Tudo pra direita, J1: -58, J2: 0, J3: 59, Z: 90

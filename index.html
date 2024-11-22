@@ -43,13 +43,15 @@
         <label class="label">Posição Absoluta</label>
         <div class="control-group">
           <label>X</label>
-          <input type="range" min="-100" max="100" value="0" id="position-x" class="slider">
-          <input type="number" id="value-x" class="value-input" value="0" min="-100" max="100">
+          <input type="number" id="value-x" class="value-input" value="0">
         </div>
         <div class="control-group">
           <label>Y</label>
-          <input type="range" min="-100" max="100" value="0" id="position-y" class="slider">
-          <input type="number" id="value-y" class="value-input" value="0" min="-100" max="100">
+          <input type="number" id="value-y" class="value-input" value="0">
+        </div>
+        <div class="control-group">
+          <label>J3 Global</label>
+          <input type="number" id="angle-j3-global" class="value-input" value="0">
         </div>
       </div>
     </div>
@@ -65,7 +67,7 @@
       <span>100</span>
     </div>
   </div>
-  <input type="button" class="send" value="Enviar">
+  <input type="button" class="send"  id="send" value="Enviar">
   <div class="save-position-container">
     <input type="text" id="position-name" placeholder="Digite o nome da posição" />
     <button id="save-position">Salvar Posição</button>

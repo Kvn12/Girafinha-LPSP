@@ -2,17 +2,24 @@ function syncValues(sliderId, inputId, callback) {
     const slider = document.getElementById(sliderId);
     const input = document.getElementById(inputId);
 
-    // Atualizar caixa de texto quando o slider mudar
-    slider.addEventListener('input', () => {
-        input.value = slider.value;
-        if (callback) callback();
-    });
+    if (slider && input) {
+        // Atualizar caixa de texto quando o slider mudar
+        slider.addEventListener('input', () => {
+            input.value = slider.value;
+            if (callback) callback();
+        });
 
-    // Atualizar slider quando a caixa de texto mudar
-    input.addEventListener('input', () => {
-        slider.value = input.value;
-        if (callback) callback();
-    });
+        // Atualizar slider quando a caixa de texto mudar
+        input.addEventListener('input', () => {
+            slider.value = input.value;
+            if (callback) callback();
+        });
+    }
+    else if (input) {
+        input.addEventListener('input', () => {
+            if (callback) callback();
+        });
+    }
 }
 
 // Função para atualizar valores de X e Y com base nos ângulos J1 e J2
@@ -22,25 +29,29 @@ function updateForwardKinematics() {
 
     const [x, y] = forwardKinematics(theta1, theta2);
 
-    document.getElementById('position-x').value = x;
     document.getElementById('value-x').value = x;
-    document.getElementById('position-y').value = y;
     document.getElementById('value-y').value = y;
 }
 
 // Função para atualizar valores de J1, J2 e J3 com base nas posições X e Y
 function updateInverseKinematics() {
-    const x = parseFloat(document.getElementById('position-x').value);
-    const y = parseFloat(document.getElementById('position-y').value);
+    const x = parseFloat(document.getElementById('value-x').value);
+    const y = parseFloat(document.getElementById('value-y').value);
+    const j3 = parseFloat(document.getElementById('angle-j3-global').value);
 
-    const [theta1, theta2, phi] = inverseKinematics(x, y);
-
-    document.getElementById('angle-j1').value = theta1;
-    document.getElementById('value-j1').value = theta1;
-    document.getElementById('angle-j2').value = theta2;
-    document.getElementById('value-j2').value = theta2;
-    document.getElementById('angle-j3').value = phi;
-    document.getElementById('value-j3').value = phi;
+    const [theta1, theta2, phi] = inverseKinematics(x, y, j3);
+    
+    // Conversão para a comunicação com o arduino
+    j1 = parseInt(theta1*(-58)/90);
+    j2 = parseInt(theta2*(-63)/90);
+    j3R = parseInt(phi*(-59)/90);
+    
+    document.getElementById('angle-j1').value = j1;
+    document.getElementById('value-j1').value = j1;
+    document.getElementById('angle-j2').value = j2;
+    document.getElementById('value-j2').value = j2;
+    document.getElementById('angle-j3').value = j3R;
+    document.getElementById('value-j3').value = j3R;
 }
 
 // Sincronizar cada slider com a caixa de texto correspondente
@@ -56,69 +67,98 @@ syncValues('angle-j1', 'value-j1');
 syncValues('angle-j2', 'value-j2');
 syncValues('angle-j3', 'value-j3');
 syncValues('position-z', 'value-z');
-syncValues('position-x', 'value-x');
-syncValues('position-y', 'value-y');
+
 
 // Função para calcular cinemática direta (forward kinematics)
 function forwardKinematics(theta1, theta2) {
     const L1 = 228;   // Comprimento do primeiro braço
     const L2 = 136.5; // Comprimento do segundo braço
 
-    const theta1F = theta1 * Math.PI / 180; // graus para radianos
-    const theta2F = theta2 * Math.PI / 180;
+    const theta1g = (90*theta1)/-58;
+    const theta2g = (90*theta2)/-58;
 
-    const xP = Math.round(L1 * Math.cos(theta1F) + L2 * Math.cos(theta1F + theta2F));
-    const yP = Math.round(L1 * Math.sin(theta1F) + L2 * Math.sin(theta1F + theta2F));
+    const theta1F = theta1g * Math.PI / 180; // graus para radianos
+    const theta2F = theta2g * Math.PI / 180;
+
+    const xP = Math.round(L1 * Math.sin(theta1F) + L2 * Math.sin(theta1F + theta2F));
+    const yP = Math.round(L1 * Math.cos(theta1F) + L2 * Math.cos(theta1F + theta2F));
 
     return [xP, yP];
 }
 
 // Função para calcular cinemática inversa
-function inverseKinematics(x, y) {
-    const L1 = 228;   // Comprimento do primeiro braço
-    const L2 = 136.5; // Comprimento do segundo braço
+function inverseKinematics(x, y, j3Global) {
+    const L1 = 228;           // Comprimento do primeiro braço
+    const L2 = 137;           // Comprimento do segundo braço
+    const PI = Math.PI;
 
-    let theta2 = Math.acos((Math.pow(x, 2) + Math.pow(y, 2) - Math.pow(L1, 2) - Math.pow(L2, 2)) / (2 * L1 * L2));
-    if (x < 0 && y < 0) {
-        theta2 = -theta2;
-    }
+    // Verifica se as coordenadas estão no alcance do braço
+    const reach = L1 + L2;
+    const distance = Math.sqrt(x ** 2 + y ** 2);
 
-    let theta1 = Math.atan(x / y) - Math.atan((L2 * Math.sin(theta2)) / (L1 + L2 * Math.cos(theta2)));
-
-    theta2 = -theta2 * 180 / Math.PI;
-    theta1 = theta1 * 180 / Math.PI;
-
-    if (x >= 0 && y >= 0) {
-        theta1 = 90 - theta1;
-    }
-    if (x < 0 && y > 0) {
-        theta1 = 90 - theta1;
-    }
-    if (x < 0 && y < 0) {
-        theta1 = 270 - theta1;
-        phi = 270 - theta1 - theta2;
-        phi = -phi;
-    }
-    if (x > 0 && y < 0) {
-        theta1 = -90 - theta1;
-    }
-    if (x < 0 && y === 0) {
-        theta1 = 270 + theta1;
+    if (distance > reach || distance < Math.abs(L1 - L2)) {
+        console.error("Coordenadas fora do alcance do braço.");
+        return [NaN, NaN, NaN];                                     // REVER
     }
 
-    let phi = 90 + theta1 + theta2;
-    phi = -phi;
+    // Calcula theta2 com validação
+    let cosTheta2 = (Math.pow(x,2) + Math.pow(y,2) - L1 ** 2 - L2 ** 2) / (2 * L1 * L2);
 
-    if (x < 0 && y < 0) {
-        phi = 270 - theta1 - theta2;
+    if (cosTheta2 < -1 || cosTheta2 > 1) {
+        console.error("Erro no cálculo de cosTheta2. Verifique as coordenadas.");
+        return [NaN, NaN, NaN];                                     // REVER
     }
-    if (Math.abs(phi) > 165) {
-        phi = 180 + phi;
+    let theta2 = Math.acos(cosTheta2);
+
+    theta2 = -theta2;
+    
+    // Calcula theta1 evitando divisão por zero
+    let theta1 = 0;
+    if (x == 0) {
+        if (y > 0) {
+            theta1 = PI/2 - Math.atan2(L2 * Math.sin(theta2), L1 + L2 * Math.cos(theta2));
+        }
+        else {
+            theta1 = -PI/2 - Math.atan2(L2 * Math.sin(theta2), L1 + L2 * Math.cos(theta2));
+        }
+    }
+    else{
+        theta1 = Math.atan2(y, x) - Math.atan2(L2 * Math.sin(theta2), L1 + L2 * Math.cos(theta2));
     }
 
+    // Converte os ângulos para graus
+    theta2 = (-1) * theta2 * 180 / PI;
+    theta1 = theta1 * 180 / PI;
+
+    // Corrige o referencial de theta1
+    theta1 = -theta1 + 90;
+
+    // Calcula o ângulo phi para que a garra fique na angulação desejado em relação ao eixo X
+    let phi = j3Global - (theta1 + theta2);
+
+    // Corrigindo mais voltas
+    theta1 = theta1 % 360;
+
+    // Corrigindo para os ranges mecanicos
+    if (theta1 > 180) {
+        theta1 = theta1 - 360;
+    }
+
+    if (theta1 < -180) {
+        theta1 = 360 + theta1;
+    }
+
+    if (Math.abs(phi) > 180) {
+        console.log("Não é possível chegar nessa posição com essa angulação.");
+        phi = 0;
+    }
+
+    // Arredonda os ângulos
     theta1 = Math.round(theta1);
     theta2 = Math.round(theta2);
     phi = Math.round(phi);
+
+    console.log("Theta1:", theta1, "Theta2:", theta2, "Phi:", phi);
 
     return [theta1, theta2, phi];
 }
@@ -126,9 +166,9 @@ function inverseKinematics(x, y) {
 // Rever os ranges dos sliders e inputs 
 // Rever os valores q estao sendo calculados e converter
 
-// document.getElementById('send').addEventListener('click', () => {
-//     sendCommand();
-// });
+document.getElementById('send').addEventListener('click', () => {
+    sendCommand();
+});
 
 
 // Função para enviar comando ao servidor
@@ -137,8 +177,6 @@ function sendCommand() {
     const j2 = document.getElementById('angle-j2').value;
     const j3 = document.getElementById('angle-j3').value;
     const z = document.getElementById('position-z').value;
-    const x = document.getElementById('position-x').value;
-    const y = document.getElementById('position-y').value;
     const gripper = document.getElementById('gripper-value').value;
 
     /*
@@ -253,8 +291,6 @@ document.getElementById('load-position').addEventListener('click', () => {
 
         // Calcular e atualizar X e Y usando forward kinematics
         const [x, y] = forwardKinematics(j1, j2);
-        document.getElementById('position-x').value = x;
-        document.getElementById('position-y').value = y;
 
         document.getElementById('value-x').value = x;
         document.getElementById('value-y').value = y;
