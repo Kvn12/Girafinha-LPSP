@@ -1,15 +1,16 @@
 const express = require('express');
 const path = require('path');
 const { SerialPort } = require('serialport'); // Importação da biblioteca serialport
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-const port = 5500;
+const port = 3000;
 
 // Middleware para ler o corpo da requisição JSON
 app.use(express.json());
 
 // Configuração da porta serial para o Arduino (ajuste a porta e baud rate conforme necessário)
-const arduinoPort = new SerialPort({ path: 'COM5', baudRate: 115200 });
+const arduinoPort = new SerialPort({ path: 'COM3', baudRate: 115200 });
 
 // Evento para monitorar a abertura da porta serial
 arduinoPort.on('open', () => {
@@ -80,3 +81,11 @@ app.get('/get-positions', (req, res) => {
       res.json(positions);
   });
 });
+
+
+// Colocando camera no site
+app.get('/video_feed_0', createProxyMiddleware({ 
+  target: 'http://localhost:5000', 
+  changeOrigin: true,
+  ws: true
+}));

@@ -1,2 +1,3 @@
 Nome: Home, J1: 0, J2: 0, J3: 0, Z: 90
 Nome: Tudo pra direita, J1: -58, J2: 0, J3: 59, Z: 90
+Nome: DuckVader, J1: 59, J2: -41, J3: 36, Z: 0
