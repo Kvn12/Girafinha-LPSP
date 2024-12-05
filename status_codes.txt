@@ -1,0 +1,8 @@
+10 - Homing 
+11 - Has Homed
+20 - Data received
+21 - Moved to position
+
+data[0] = 0 - To indicate that only the rele has to change its state
+
+data[1] = 1 - To indicate that has to home

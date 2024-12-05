@@ -4,7 +4,7 @@ const { SerialPort } = require('serialport'); // Importação da biblioteca seri
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-const port = 3000;
+const port = 80;
 
 // Middleware para ler o corpo da requisição JSON
 app.use(express.json());

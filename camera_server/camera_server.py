@@ -4,7 +4,7 @@ import cv2
 app = Flask(__name__)
 
 def generate():
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     # Aumentando a qualidade da captura de vídeo
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # Largura da resolução

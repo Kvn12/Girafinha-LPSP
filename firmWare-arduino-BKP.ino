@@ -64,53 +64,36 @@ void setup() {
   data[6] = 50;    //Gripper
   data[7] = 1;     //Rele
  
-  // Start with motors off
-  digitalWrite(releModule, 1);
 }
 
-void loop() {  
+void loop() {
+  digitalWrite(releModule, data[7]);
+  
   if (Serial.available()) {
-    content = Serial.readString(); // Read the incomding data from Processing
-    // Extract the data from the string and put into separate integer variables (data[] array)
-    for (int i = 0; i < 8; i++) {
-      int index = content.indexOf(","); // locate the first ","
-      data[i] = atol(content.substring(0, index).c_str()); //Extract the number from start to the ","
-      content = content.substring(index + 1); //Remove the number from the string
-    }
-
-    Serial.println("20"); // To inform that data has been received
-
-    if(data[0] == 0){ // To change the rele state only
-      digitalWrite(releModule, data[7]);
-      if (data[7] == 0){
-        Serial.println("10"); // To inform that is homing 
-        homing();
-        alreadyHomed = 1;
-        Serial.println("11"); // To inform that has homed
+    // if(alreadyHomed == 0){
+    //   Serial.println("10"); // To inform that is holming 
+    //   homing();
+    //   alreadyHomed = 1;
+    //   Serial.println("11"); // To inform that has already homed
+    // }
+    // else{
+      content = Serial.readString(); // Read the incomding data from Processing
+      // Extract the data from the string and put into separate integer variables (data[] array)
+      for (int i = 0; i < 8; i++) {
+        int index = content.indexOf(","); // locate the first ","
+        data[i] = atol(content.substring(0, index).c_str()); //Extract the number from start to the ","
+        content = content.substring(index + 1); //Remove the number from the string
       }
-    }
-    else if (data[1] == 0){
-      Serial.println("10"); // To inform that is homing 
-      homing();
-      alreadyHomed = 1;
-      Serial.println("11"); // To inform that has homed
-    }
-    else{
-      if(alreadyHomed == 0){
-        Serial.println("10"); // To inform that is homing 
-        homing();
-        alreadyHomed = 1;
-        Serial.println("11"); // To inform that has already homed
-      }
+      Serial.println("20"); // To inform that data has been received
 
-      delay(50);
+      delay(1000);
 
       stepper1Position = (int)(float(data[2])/ 100 * max_j1 * safety_value);
       stepper2Position = (int)(float(data[3])/ 100 * max_j2 * safety_value);
       stepper3Position = (int)(float(data[4])/ 100 * max_j3 * safety_value);
       stepper4Position = (int)(float(data[5])/ 100 * max_z * safety_value);
 
-      delay(50);
+      delay(100);
       
       stepper1.setSpeed(data[0]);
       stepper2.setSpeed(data[0]);
@@ -133,25 +116,23 @@ void loop() {
         stepper3.run();
         stepper4.run();
       }
-
-      delay(50);
+      delay(100);
 
       gripperServo.write((int)(float(data[6])/100 * max_gripper));
 
       Serial.println("21");
-
-      delay(100);
-      /*
-      data[0] - Speed value
-      data[1] - Acceleration value
-      data[2] - Joint 1 angle
-      data[3] - Joint 2 angle
-      data[4] - Joint 3 angle
-      data[5] - Z position
-      data[6] - Gripper value
-      data[7] - Rele State
-      */
-    }
+      delay(300);
+    // }
+    /*
+     data[0] - Speed value
+     data[1] - Acceleration value
+     data[2] - Joint 1 angle
+     data[3] - Joint 2 angle
+     data[4] - Joint 3 angle
+     data[5] - Z position
+     data[6] - Gripper value
+     data[7] - Rele State
+    */
   }
 }
 

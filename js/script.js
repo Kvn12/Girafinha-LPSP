@@ -163,9 +163,6 @@ function inverseKinematics(x, y, j3Global) {
     return [theta1, theta2, phi];
 }
 
-// Rever os ranges dos sliders e inputs 
-// Rever os valores q estao sendo calculados e converter
-
 document.getElementById('send').addEventListener('click', () => {
     sendCommand();
 });
@@ -178,6 +175,7 @@ function sendCommand() {
     const j3 = document.getElementById('angle-j3').value;
     const z = document.getElementById('position-z').value;
     const gripper = document.getElementById('gripper-value').value;
+    const state = this.checked ? '0' : '1';
 
     /*
         data[0] - Speed value
@@ -189,7 +187,7 @@ function sendCommand() {
         data[6] - Gripper value
     */
     // const command = `4000,4000,0,0,0,20000,75`;
-    const command = `4000,2000,${j1},${j2},${j3},${z},${gripper}`;
+    const command = `4000,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
 
     console.log("Enviando comando:", command);
 
@@ -296,6 +294,48 @@ document.getElementById('load-position').addEventListener('click', () => {
         document.getElementById('value-y').value = y;
     } else {
         alert('Erro ao carregar a posição selecionada.');
+    }
+});
+
+// Função para comandar somente o rele que liga o braço robótico
+document.getElementById('relaySwitch').addEventListener('change', function() {
+
+    console.log("relay");
+    const j1 = document.getElementById('angle-j1').value;
+    const j2 = document.getElementById('angle-j2').value;
+    const j3 = document.getElementById('angle-j3').value;
+    const z = document.getElementById('position-z').value;
+    const gripper = document.getElementById('gripper-value').value;
+    const state = this.checked ? '0' : '1';
+
+    const command = `0,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
+
+    fetch('/sendCommand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command })
+    });
+});
+
+document.getElementById('homeArduino').addEventListener('click', function() {
+    if(!document.getElementById('relaySwitch').checked){
+        alert("Please turn the Motors on First");
+    }
+    else {
+        const j1 = document.getElementById('angle-j1').value;
+        const j2 = document.getElementById('angle-j2').value;
+        const j3 = document.getElementById('angle-j3').value;
+        const z = document.getElementById('position-z').value;
+        const gripper = document.getElementById('gripper-value').value;
+        const state = this.checked ? '0' : '1';
+
+        const command = `4000,0,${j1},${j2},${j3},${z},${gripper},${state}`;
+
+        fetch('/sendCommand', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+        });
     }
 });
 
