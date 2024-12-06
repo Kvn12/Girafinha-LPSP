@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle do Braço SCARA</title>
+  <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+  <h1>Controle do Braço SCARA</h1>
+  <div id="sendControls">
+    <div id="relayControl">
+      <h3>Inicializar Sistema</h3>
+      <label class="switch">
+        <input type="checkbox" id="relaySwitch">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div id="homeControl">
+      <h3>Executar função de Home</h3>
+      <label class="homeButton">
+        <input type="button" class="send"  id="homeArduino" value="Enviar">
+      </label>
+    </div>
+    <div id="resetContainer">
+      <h3>Reiniciar Firmware do Arduino</h3>
+      <button id="resetButton" class="send">Reiniciar Arduino</button>
+    </div>
+    <h3>Ir para a tela de movimentos</h3>
+    <button onclick="window.location.href='/move'" class="send">Ir</button>
+  </div>
+  </div>
+  <script src="js/scriptIndex.js"></script>
+</body>
+</html>

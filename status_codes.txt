@@ -1,7 +1,19 @@
+Status Codes arduino -> server
 10 - Homing 
 11 - Has Homed
 20 - Data received
 21 - Moved to position
+30 - Arduino Already on before connection, going to pos 0
+
+Comunication server -> arduino 
+data[0] - Speed value
+data[1] - Acceleration value
+data[2] - Joint 1 angle
+data[3] - Joint 2 angle
+data[4] - Joint 3 angle
+data[5] - Z position
+data[6] - Gripper value
+data[7] - Rele State
 
 data[0] = 0 - To indicate that only the rele has to change its state
 

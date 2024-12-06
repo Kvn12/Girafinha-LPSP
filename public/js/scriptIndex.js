@@ -185,17 +185,23 @@ function sendCommand() {
         data[4] - Joint 3 angle
         data[5] - Z position
         data[6] - Gripper value
+        data[7] - Rele State
+
     */
-    // const command = `4000,4000,0,0,0,20000,75`;
     const command = `4000,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
 
-    console.log("Enviando comando:", command);
+    if(!document.getElementById('relaySwitch').checked){
+        alert("Please turn on the motors first!");
+    }
+    else {
+        console.log("Enviando comando:", command);
 
-    fetch('/sendCommand', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command })
-    });
+        fetch('/sendCommand', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+        });
+    }
 }
 
 document.getElementById('save-position').addEventListener('click', () => {
@@ -317,9 +323,10 @@ document.getElementById('relaySwitch').addEventListener('change', function() {
     });
 });
 
+// Função para dar home no arduino
 document.getElementById('homeArduino').addEventListener('click', function() {
     if(!document.getElementById('relaySwitch').checked){
-        alert("Please turn the Motors on First");
+        alert("Please turn on the motors first!");
     }
     else {
         const j1 = document.getElementById('angle-j1').value;
@@ -337,6 +344,21 @@ document.getElementById('homeArduino').addEventListener('click', function() {
             body: JSON.stringify({ command })
         });
     }
+});
+
+// Função para dar reset no arduino
+document.getElementById('resetButton').addEventListener('click', () => {
+    fetch('/reset_arduino', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        location.reload(); 
+        alert(data.message); // Mensagem de sucesso ou erro
+    })
+    .catch(error => {
+        console.error('Erro ao reiniciar o Arduino:', error);
+    });
 });
 
 

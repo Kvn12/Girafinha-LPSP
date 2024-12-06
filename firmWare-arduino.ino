@@ -83,10 +83,18 @@ void loop() {
     if(data[0] == 0){ // To change the rele state only
       digitalWrite(releModule, data[7]);
       if (data[7] == 0){
-        Serial.println("10"); // To inform that is homing 
-        homing();
-        alreadyHomed = 1;
-        Serial.println("11"); // To inform that has homed
+        if (alreadyHomed == 0){
+          Serial.println("10"); // To inform that is homing 
+          homing();
+          alreadyHomed = 1;
+          Serial.println("11"); // To inform that has homed
+        }
+        else {
+          Serial.println("30"); // To inform that is already on and is going to pos 0.
+        }        
+      }
+      else {
+        alreadyHomed = 0;
       }
     }
     else if (data[1] == 0){
@@ -102,56 +110,55 @@ void loop() {
         alreadyHomed = 1;
         Serial.println("11"); // To inform that has already homed
       }
-
-      delay(50);
-
-      stepper1Position = (int)(float(data[2])/ 100 * max_j1 * safety_value);
-      stepper2Position = (int)(float(data[3])/ 100 * max_j2 * safety_value);
-      stepper3Position = (int)(float(data[4])/ 100 * max_j3 * safety_value);
-      stepper4Position = (int)(float(data[5])/ 100 * max_z * safety_value);
-
-      delay(50);
-      
-      stepper1.setSpeed(data[0]);
-      stepper2.setSpeed(data[0]);
-      stepper3.setSpeed(data[0]);
-      stepper4.setSpeed(data[0]);
-      
-      stepper1.setAcceleration(data[1]);
-      stepper2.setAcceleration(data[1]);
-      stepper3.setAcceleration(data[1]);
-      stepper4.setAcceleration(data[1]);
-      
-      stepper1.moveTo(stepper1Position);
-      stepper2.moveTo(stepper2Position);
-      stepper3.moveTo(stepper3Position);
-      stepper4.moveTo(stepper4Position);
-      
-      while (stepper1.currentPosition() != stepper1Position || stepper2.currentPosition() != stepper2Position || stepper3.currentPosition() != stepper3Position || stepper4.currentPosition() != stepper4Position) {
-        stepper1.run();
-        stepper2.run();
-        stepper3.run();
-        stepper4.run();
-      }
-
-      delay(50);
-
-      gripperServo.write((int)(float(data[6])/100 * max_gripper));
-
-      Serial.println("21");
-
-      delay(100);
-      /*
-      data[0] - Speed value
-      data[1] - Acceleration value
-      data[2] - Joint 1 angle
-      data[3] - Joint 2 angle
-      data[4] - Joint 3 angle
-      data[5] - Z position
-      data[6] - Gripper value
-      data[7] - Rele State
-      */
     }
+    delay(50);
+
+    stepper1Position = (int)(float(data[2])/ 100 * max_j1 * safety_value);
+    stepper2Position = (int)(float(data[3])/ 100 * max_j2 * safety_value);
+    stepper3Position = (int)(float(data[4])/ 100 * max_j3 * safety_value);
+    stepper4Position = (int)(float(data[5])/ 100 * max_z * safety_value);
+
+    delay(50);
+    
+    stepper1.setSpeed(data[0]);
+    stepper2.setSpeed(data[0]);
+    stepper3.setSpeed(data[0]);
+    stepper4.setSpeed(data[0]);
+    
+    stepper1.setAcceleration(data[1]);
+    stepper2.setAcceleration(data[1]);
+    stepper3.setAcceleration(data[1]);
+    stepper4.setAcceleration(data[1]);
+    
+    stepper1.moveTo(stepper1Position);
+    stepper2.moveTo(stepper2Position);
+    stepper3.moveTo(stepper3Position);
+    stepper4.moveTo(stepper4Position);
+    
+    while (stepper1.currentPosition() != stepper1Position || stepper2.currentPosition() != stepper2Position || stepper3.currentPosition() != stepper3Position || stepper4.currentPosition() != stepper4Position) {
+      stepper1.run();
+      stepper2.run();
+      stepper3.run();
+      stepper4.run();
+    }
+
+    delay(50);
+
+    gripperServo.write((int)(float(data[6])/100 * max_gripper));
+
+    Serial.println("21");
+
+    delay(100);
+    /*
+    data[0] - Speed value
+    data[1] - Acceleration value
+    data[2] - Joint 1 angle
+    data[3] - Joint 2 angle
+    data[4] - Joint 3 angle
+    data[5] - Z position
+    data[6] - Gripper value
+    data[7] - Rele State
+    */
   }
 }
 

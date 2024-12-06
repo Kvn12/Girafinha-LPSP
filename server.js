@@ -23,7 +23,17 @@ arduinoPort.on('data', (data) => {
 });
 
 // Servir arquivos estáticos (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rota para a pagina inicial
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Rota para a segunda página
+app.get('/move', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'movement.html'));
+});
 
 // Endpoint para receber o comando do HTML e enviá-lo ao Arduino
 app.post('/sendCommand', (req, res) => {
@@ -82,10 +92,33 @@ app.get('/get-positions', (req, res) => {
   });
 });
 
+// Reinicar o arduino caso necessario
+app.post('/reset_arduino', (req, res) => {
+  try {
+      arduinoPort.close((err) => {
+          if (err) {
+              return res.status(500).json({ status: 'error', message: 'Erro ao fechar a porta serial: ' + err.message });
+          }
+
+          // Reabrir a conexão após um breve atraso
+          setTimeout(() => {
+              arduinoPort.open((err) => {
+                  if (err) {
+                      return res.status(500).json({ status: 'error', message: 'Erro ao reabrir a porta serial: ' + err.message });
+                  }
+                  res.json({ status: 'success', message: 'Arduino reiniciado com sucesso!' });
+              });
+          }, 2000); // 2 segundos de pausa antes de reabrir
+      });
+  } catch (error) {
+      res.status(500).json({ status: 'error', message: 'Erro: ' + error.message });
+  }
+});
 
 // Colocando camera no site
-app.get('/video_feed_0', createProxyMiddleware({ 
-  target: 'http://localhost:5000', 
+app.get('/video_feed_girafinha', createProxyMiddleware({ 
+  // target: 'http://localhost:5000', 
+  target: 'http://143.106.61.198:5000', 
   changeOrigin: true,
   ws: true
 }));
