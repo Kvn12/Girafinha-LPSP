@@ -3,3 +3,4 @@ Nome: Tudo pra direita, J1: -58, J2: 0, J3: 59, Z: 90
 Nome: DuckVader, J1: 59, J2: -41, J3: 36, Z: 0
 Nome: Felipe, J1: -30, J2: 58, J3: -1, Z: 77
 Nome: kevao, J1: 72, J2: 0, J3: 0, Z: 95
+Nome: 2602, J1: 32, J2: 33, J3: 42, Z: 95

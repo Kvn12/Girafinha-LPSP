@@ -303,26 +303,6 @@ document.getElementById('load-position').addEventListener('click', () => {
     }
 });
 
-// Função para comandar somente o rele que liga o braço robótico
-document.getElementById('relaySwitch').addEventListener('change', function() {
-
-    console.log("relay");
-    const j1 = document.getElementById('angle-j1').value;
-    const j2 = document.getElementById('angle-j2').value;
-    const j3 = document.getElementById('angle-j3').value;
-    const z = document.getElementById('position-z').value;
-    const gripper = document.getElementById('gripper-value').value;
-    const state = this.checked ? '0' : '1';
-
-    const command = `0,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
-
-    fetch('/sendCommand', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command })
-    });
-});
-
 // Função para dar home no arduino
 document.getElementById('homeArduino').addEventListener('click', function() {
     if(!document.getElementById('relaySwitch').checked){
