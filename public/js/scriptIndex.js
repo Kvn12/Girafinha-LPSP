@@ -4,6 +4,8 @@ document.getElementById('relaySwitch').addEventListener('change', function() {
     console.log("relay");
     const state = this.checked ? '0' : '1';
 
+    localStorage.setItem('releOn', this.checked);
+
     const command = `0,2000,0,0,0,100,100,${state}`;
 
     fetch('/sendCommand', {

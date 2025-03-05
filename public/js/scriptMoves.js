@@ -190,7 +190,9 @@ function sendCommand() {
     */
     const command = `4000,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
 
-    if(!document.getElementById('relaySwitch').checked){
+    const releOn = localStorage.getItem('releOn') === 'true';
+
+    if(!releOn){  
         alert("Please turn on the motors first!");
     }
     else {
@@ -305,7 +307,8 @@ document.getElementById('load-position').addEventListener('click', () => {
 
 // Função para dar home no arduino
 document.getElementById('homeArduino').addEventListener('click', function() {
-    if(!document.getElementById('relaySwitch').checked){
+    const releOn = localStorage.getItem('releOn') === 'true';
+    if(!releOn){
         alert("Please turn on the motors first!");
     }
     else {
@@ -339,6 +342,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
     .catch(error => {
         console.error('Erro ao reiniciar o Arduino:', error);
     });
+    localStorage.setItem('releOn', 'false'); // Atualiza para desligado
 });
 
 

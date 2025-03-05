@@ -116,9 +116,16 @@ app.post('/reset_arduino', (req, res) => {
 });
 
 // Colocando camera no site
-app.get('/video_feed_girafinha', createProxyMiddleware({ 
-  // target: 'http://localhost:5000', 
-  target: 'http://143.106.61.198:5000', 
+//Pegar camera do pc da pipefa
+// app.get('/video_feed_girafinha', createProxyMiddleware({ 
+//   target: 'http://143.106.61.198:5003', 
+//   changeOrigin: true,
+//   ws: true
+// }));
+
+//Pegar camera do pc da girafinah
+app.get('/video_feed_0', createProxyMiddleware({ 
+  target: 'http://localhost:5000', 
   changeOrigin: true,
   ws: true
 }));
