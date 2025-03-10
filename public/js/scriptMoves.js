@@ -338,6 +338,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
     .then(data => {
         location.reload(); 
         alert(data.message); // Mensagem de sucesso ou erro
+        window.location.href = "/";
     })
     .catch(error => {
         console.error('Erro ao reiniciar o Arduino:', error);

@@ -47,3 +47,12 @@ document.getElementById('resetButton').addEventListener('click', () => {
         console.error('Erro ao reiniciar o Arduino:', error);
     });
 });
+
+document.getElementById("goButton").addEventListener("click", function () {
+    if(!document.getElementById('relaySwitch').checked){
+        alert("Please turn on the motors first!");
+    }
+    else{
+        window.location.href = "/move";
+    }
+});
