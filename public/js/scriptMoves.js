@@ -190,7 +190,7 @@ function sendCommand() {
     */
     const command = `4000,2000,${j1},${j2},${j3},${z},${gripper},${state}`;
 
-    const releOn = localStorage.getItem('releOn') === 'true';
+    const releOn = Number(state);
 
     if(!releOn){  
         alert("Please turn on the motors first!");
@@ -203,6 +203,7 @@ function sendCommand() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ command })
         });
+        updateArmPosition(j1, j2, j3, z, gripper, state)
     }
 }
 
@@ -307,7 +308,9 @@ document.getElementById('load-position').addEventListener('click', () => {
 
 // Função para dar home no arduino
 document.getElementById('homeArduino').addEventListener('click', function() {
-    const releOn = localStorage.getItem('releOn') === 'true';
+    const state = this.checked ? '0' : '1';
+    const releOn = Number(state);
+
     if(!releOn){
         alert("Please turn on the motors first!");
     }
@@ -343,8 +346,44 @@ document.getElementById('resetButton').addEventListener('click', () => {
     .catch(error => {
         console.error('Erro ao reiniciar o Arduino:', error);
     });
-    localStorage.setItem('releOn', 'false'); // Atualiza para desligado
+    updateArmPosition(0, 0, 0, 0, 0, 0)
 });
+
+function updateArmPosition(j1, j2, j3, z, gripper, rele) {
+    fetch('/update-position', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ j1, j2, j3, z, gripper, rele})  
+    })
+    .then(response => response.text())
+    .then(data => console.log('Resposta do servidor:', data))
+    .catch(error => console.error('Erro ao atualizar a posição do braço:', error));
+}
+
+
+fetch('/current-position')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Posição atual do braço:', data);
+
+        document.getElementById('angle-j1').value = data.j1;
+        document.getElementById('value-j1').value = data.j1;
+        document.getElementById('angle-j2').value = data.j2;
+        document.getElementById('value-j2').value = data.j2;
+        document.getElementById('angle-j3').value = data.j3;
+        document.getElementById('value-j3').value = data.j3;
+        document.getElementById('position-z').value = data.z;
+        document.getElementById('value-z').value = data.z;
+        document.getElementById('gripper-value').value = data.gripper; 
+      
+        updateForwardKinematics()
+
+    })
+    .catch(error => console.error('Erro ao obter a posição do braço:', error));
+
+
 
 
 // Carregar posições ao iniciar a página

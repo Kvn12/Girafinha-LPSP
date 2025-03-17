@@ -4,8 +4,6 @@ document.getElementById('relaySwitch').addEventListener('change', function() {
     console.log("relay");
     const state = this.checked ? '0' : '1';
 
-    localStorage.setItem('releOn', this.checked);
-
     const command = `0,2000,0,0,0,100,100,${state}`;
 
     fetch('/sendCommand', {
@@ -13,6 +11,24 @@ document.getElementById('relaySwitch').addEventListener('change', function() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command })
     });
+
+    const j1 = 0;
+    const j2 = 0;
+    const j3 = 0;
+    const j3_global = 0;
+    const z = 95;
+    const gripper = 100;
+    const stateNumber = Number(state);
+
+    fetch('/update-position', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' },
+        body: JSON.stringify({ j1, j2, j3, j3_global, z, gripper, rele: stateNumber})
+    })
+    .then(response => response.text())
+    .then(data => console.log('Resposta do servidor:', data))
+    .catch(error => console.error('Erro ao atualizar a posição do braço:', error));
 });
 
 // Função para dar home no arduino
@@ -56,3 +72,12 @@ document.getElementById("goButton").addEventListener("click", function () {
         window.location.href = "/move";
     }
 });
+
+fetch('/current-position')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Posição atual do braço:', data);
+
+        document.getElementById('relaySwitch').checked = data.rele;
+    })
+    .catch(error => console.error('Erro ao obter a posição do braço:', error));

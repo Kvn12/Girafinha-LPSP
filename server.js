@@ -6,6 +6,8 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = 80;
 
+let currentPosition = { j1: 0, j2: 0, j3: 0, z: 0, gripper: 100, rele: 0};
+
 // Middleware para ler o corpo da requisição JSON
 app.use(express.json());
 
@@ -115,6 +117,25 @@ app.post('/reset_arduino', (req, res) => {
   }
 });
 
+// Endpoint para atualizar a posição do braço
+app.post('/update-position', (req, res) => {
+  const { j1, j2, j3, z, gripper, rele } = req.body;
+  
+  if (j1 === undefined || j2 === undefined || j3 === undefined || z === undefined || gripper === undefined || rele === undefined) {
+      return res.status(400).send('Invalid data');
+  }
+
+  currentPosition = { j1, j2, j3, z, gripper, rele};
+  console.log('Posição do braço atualizada:', currentPosition);
+
+  res.status(200).send('Positions updated.');
+});
+
+// Endpoint para obter a posição atual
+app.get('/current-position', (req, res) => {
+  res.json(currentPosition);
+});
+
 // Colocando camera no site
 //Pegar camera do pc da pipefa
 // app.get('/video_feed_girafinha', createProxyMiddleware({ 
@@ -129,3 +150,32 @@ app.get('/video_feed_0', createProxyMiddleware({
   changeOrigin: true,
   ws: true
 }));
+
+//para abrir o server da camera
+const { exec } = require('child_process'); // Importa o módulo child_process
+
+// Caminho para o script Python da câmera
+const cameraScriptPath = path.join(__dirname, 'camera_server/camera_server.py');
+
+// Função para iniciar o servidor da câmera
+function startCameraServer() {
+  const pythonProcess = exec(`python ${cameraScriptPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Erro ao iniciar o servidor da câmera: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Erro no servidor da câmera: ${stderr}`);
+      return;
+    }
+    console.log(`Servidor da câmera iniciado: ${stdout}`);
+  });
+
+  // Evento para quando o processo Python for encerrado
+  pythonProcess.on('close', (code) => {
+    console.log(`Servidor da câmera encerrado com código ${code}`);
+  });
+}
+
+// Inicia o servidor da câmera quando o servidor Node.js for iniciado
+startCameraServer();
