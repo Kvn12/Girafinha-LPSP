@@ -2,9 +2,15 @@ const express = require('express');
 const path = require('path');
 const { SerialPort } = require('serialport'); // Importação da biblioteca serialport
 const { createProxyMiddleware } = require('http-proxy-middleware');
-
+const session = require('express-session'); 
+const bcrypt = require('bcrypt');
+require('dotenv').config();
 const app = express();
 const port = 80;
+
+// Credenciais vêm das variáveis de ambiente
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 
 let currentPosition = { j1: 0, j2: 0, j3: 0, z: 0, gripper: 100, rele: 0};
 
@@ -24,21 +30,72 @@ arduinoPort.on('data', (data) => {
   console.log('Resposta do Arduino:', data.toString());
 });
 
+// Configuração da sessão
+app.use(session({
+  secret: 'Lpsp@4.0', // Altere para uma chave secreta forte
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Defina como true se estiver usando HTTPS
+}));
+
+// Middleware para verificar autenticação
+const requireAuth = (req, res, next) => {
+  if (req.session && req.session.authenticated) {
+    return next();
+  }
+  res.redirect('/login');
+};
+
+// Rota para a página de login
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+// Rota para processar o login
+app.post('/login', express.json(), async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username !== ADMIN_USERNAME) {
+    return res.status(401).json({ message: 'Credenciais inválidas' });
+  }
+  
+  try {
+    // Compara a senha fornecida com o hash armazenado
+    const match = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+    
+    if (match) {
+      req.session.authenticated = true;
+      return res.status(200).json({ message: 'Login bem-sucedido' });
+    } else {
+      return res.status(401).json({ message: 'Credenciais inválidas' });
+    }
+  } catch (err) {
+    console.error('Erro ao verificar senha:', err);
+    return res.status(500).json({ message: 'Erro no servidor' });
+  }
+});
+
+// Rota para logout
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
+});
+
 // Servir arquivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rota para a pagina inicial
-app.get('/', (req, res) => {
+app.get('/', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 // Rota para a segunda página
-app.get('/move', (req, res) => {
+app.get('/move', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'movement.html'));
 });
 
 // Endpoint para receber o comando do HTML e enviá-lo ao Arduino
-app.post('/sendCommand', (req, res) => {
+app.post('/sendCommand', requireAuth, (req, res) => {
   const { command } = req.body;
 
   // Enviar comando para o Arduino pela porta serial
@@ -61,7 +118,7 @@ app.listen(port, () => {
 // Endpoint para salvar a posição no arquivo positions.txt
 const fs = require('fs');
 
-app.post('/save-position', (req, res) => {
+app.post('/save-position', requireAuth, (req, res) => {
     const { name, j1, j2, j3, z } = req.body;
 
     if (!name || !j1 || !j2 || !j3 || !z) {
@@ -81,7 +138,7 @@ app.post('/save-position', (req, res) => {
     });
 });
 
-app.get('/get-positions', (req, res) => {
+app.get('/get-positions', requireAuth, (req, res) => {
   fs.readFile('positions.txt', 'utf8', (err, data) => {
       if (err) {
           console.error('Erro ao ler o arquivo:', err);
@@ -95,7 +152,7 @@ app.get('/get-positions', (req, res) => {
 });
 
 // Reinicar o arduino caso necessario
-app.post('/reset_arduino', (req, res) => {
+app.post('/reset_arduino', requireAuth, (req, res) => {
   try {
       arduinoPort.close((err) => {
           if (err) {
@@ -118,7 +175,7 @@ app.post('/reset_arduino', (req, res) => {
 });
 
 // Endpoint para atualizar a posição do braço
-app.post('/update-position', (req, res) => {
+app.post('/update-position', requireAuth, (req, res) => {
   const { j1, j2, j3, z, gripper, rele } = req.body;
   
   if (j1 === undefined || j2 === undefined || j3 === undefined || z === undefined || gripper === undefined || rele === undefined) {
@@ -132,7 +189,7 @@ app.post('/update-position', (req, res) => {
 });
 
 // Endpoint para obter a posição atual
-app.get('/current-position', (req, res) => {
+app.get('/current-position', requireAuth, (req, res) => {
   res.json(currentPosition);
 });
 
@@ -145,7 +202,7 @@ app.get('/current-position', (req, res) => {
 // }));
 
 //Pegar camera do pc da girafinah
-app.get('/video_feed_0', createProxyMiddleware({ 
+app.get('/video_feed_0', requireAuth, createProxyMiddleware({ 
   target: 'http://localhost:5000', 
   changeOrigin: true,
   ws: true
