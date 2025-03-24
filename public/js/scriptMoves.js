@@ -320,9 +320,8 @@ document.getElementById('homeArduino').addEventListener('click', function() {
         const j3 = document.getElementById('angle-j3').value;
         const z = document.getElementById('position-z').value;
         const gripper = document.getElementById('gripper-value').value;
-        const state = this.checked ? '0' : '1';
 
-        const command = `4000,0,${j1},${j2},${j3},${z},${gripper},${state}`;
+        const command = `4000,0,${j1},${j2},${j3},${z},${gripper},${releOn}`;
 
         fetch('/sendCommand', {
             method: 'POST',

@@ -15,16 +15,15 @@ document.getElementById('relaySwitch').addEventListener('change', function() {
     const j1 = 0;
     const j2 = 0;
     const j3 = 0;
-    const j3_global = 0;
     const z = 95;
     const gripper = 100;
-    const stateNumber = Number(state);
+    const stateNumber = (state == '0')? 1 : 0;
 
     fetch('/update-position', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' },
-        body: JSON.stringify({ j1, j2, j3, j3_global, z, gripper, rele: stateNumber})
+        body: JSON.stringify({ j1, j2, j3, z, gripper, rele: stateNumber})
     })
     .then(response => response.text())
     .then(data => console.log('Resposta do servidor:', data))

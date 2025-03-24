@@ -152,14 +152,14 @@ app.get('/video_feed_0', createProxyMiddleware({
 }));
 
 //para abrir o server da camera
-const { exec } = require('child_process'); // Importa o módulo child_process
+const { execFile } = require('child_process'); // Importa o módulo child_process
 
 // Caminho para o script Python da câmera
-const cameraScriptPath = path.join(__dirname, 'camera_server/camera_server.py');
+const cameraScriptPath = path.join(__dirname, 'camera_server.py');
 
 // Função para iniciar o servidor da câmera
 function startCameraServer() {
-  const pythonProcess = exec(`python ${cameraScriptPath}`, (error, stdout, stderr) => {
+const pythonProcess = execFile('python', [cameraScriptPath], (error, stdout, stderr) => {
     if (error) {
       console.error(`Erro ao iniciar o servidor da câmera: ${error.message}`);
       return;
