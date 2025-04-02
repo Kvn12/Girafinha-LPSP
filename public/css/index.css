@@ -1,0 +1,191 @@
+body { 
+    font-family: Arial, sans-serif; 
+    color: #FFFFFF;
+    display: flex; 
+    justify-content: center; 
+    background-color: #1b1b32;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.container { 
+    display: block; 
+    gap: 40px; 
+}
+
+.section { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    height: fit-content;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.control-group-z {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 98px;
+    margin-top: 58px;
+}
+
+.slider { 
+    width: 200px; 
+}
+
+.slider-vertical {
+    transform: rotate(-90deg);
+    width: 200px;
+    margin-top: 50px; /* Ajuste para centralizar o slider na vertical */
+    margin-bottom: 10px;
+}
+
+.label { 
+    font-weight: bold; 
+    margin-top: 10px; 
+}
+
+.sliders-container {
+    display: flex;
+    height: fit-content;
+    gap: 10px;
+}
+
+.value-input { 
+    width: 60px; 
+    text-align: center; 
+}
+
+.inferior-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.slider-values {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+
+.slider-values span {
+    width: 33%; /* Espaçamento uniforme para cada valor */
+    text-align: center;
+}
+
+.send {
+    font-family: Arial, sans-serif; /* Troque 'Arial' pelo nome da fonte desejada */
+    font-size: 16px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-weight: bold; /* Opcional: altera o peso da fonte */
+    color: #080808; /* Cor do texto */
+    background-color: #fcf9f9; /* Cor do fundo do botão */
+    padding: 10px 20px;
+    border: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+.save-position-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.send:hover{
+    background-color: #b9b6b6;
+}
+
+#position-name {
+    width: 200px;
+    padding: 5px;
+}
+
+#save-position {
+    padding: 5px 10px;
+    font-weight: bold;
+    background-color: #fcf9f9;
+    color: #080808;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#save-position:hover {
+    background-color: #b9b6b6;  
+}
+
+.saved-positions-container {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    gap: 10px;              
+}
+
+  
+#saved-positions {
+    width: 300px;
+    height: auto;
+    margin-top: 10px;
+}
+  
+#load-position {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-weight: bold;
+    background-color: #fcf9f9;
+    color: #080808;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#load-position:hover {
+    background-color: #b9b6b6;
+}
+
+.sendControls {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.emergency {
+    font-family: Arial, sans-serif; /* Troque 'Arial' pelo nome da fonte desejada */
+    font-size: 16px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-weight: bold; /* Opcional: altera o peso da fonte */
+    color: #080808; /* Cor do texto */
+    background-color: #f72a2a; /* Cor do fundo do botão */
+    padding: 10px 20px;
+    border: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.emergency:hover{
+    background-color: #fc0606;
+}
+
+.moventsAndCamera{
+    display: flex;
+    flex-direction: row;
+}
+
+#videoElement {
+    width: 100%; /* Ocupa 80% da largura da janela */
+    max-width: 1000px; /* Limita o tamanho máximo */
+    height: auto; /* Mantém a proporção original */
+}
